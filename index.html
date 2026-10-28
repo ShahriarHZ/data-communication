@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Introduction to Data Communications</title>
+<style>
+:root{--navy:#16324f;--blue:#2f6db5;--rust:#a64f15;--bg:#f5f3ee;--card:#fbfaf7;--line:#d5dbe1;--ink:#1d2733;--mute:#5b6672;--pale:#e7edf3;--sky:#9fc1e6}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0f1a29;overflow:hidden;font-family:'IBM Plex Sans',system-ui,Arial,sans-serif;color:var(--ink)}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#stage{width:1280px;height:720px;position:relative;transform-origin:center center;flex:none}
+section{position:absolute;inset:0;background:var(--bg);padding:56px 72px 70px;display:none;flex-direction:column;gap:24px}
+section.on{display:flex}
+section.dark{background:var(--navy);color:#f5f3ee;justify-content:center;gap:20px;padding:80px}
+h1{font-size:64px;line-height:1.05}h2{font-size:42px;line-height:1.1;color:var(--navy)}h3{font-size:24px;color:var(--navy)}
+.kick{font-size:20px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--sky)}
+.cols{display:flex;gap:40px;align-items:flex-start}
+ul{padding-left:24px;font-size:22px;line-height:1.45;width:520px;flex:none}li{margin-bottom:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1}
+.grid .card p{font-size:17px;margin-top:6px;line-height:1.35}
+table{width:100%;border-collapse:collapse;font-size:17px}th{background:var(--navy);color:#f5f3ee;text-align:left}td,th{padding:9px 12px}tr:nth-child(even) td{background:var(--pale)}tr:nth-child(odd) td{background:var(--card)}
+button,input[type=text]{font:inherit;font-size:18px;padding:8px 16px;border-radius:10px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+button.act,button:hover{background:var(--navy);color:#fff}
+input[type=text]{cursor:text;width:300px}
+.big{font-size:64px;font-weight:600;color:var(--rust)}
+.pill{display:inline-block;background:var(--rust);color:#fff;border-radius:99px;padding:3px 14px;font-size:16px;font-weight:600;vertical-align:middle;margin-left:12px}
+.box{padding:12px 18px;border-radius:10px;font-weight:600;font-size:18px}
+.q{flex:1}.q p{font-size:20px;margin:8px 0 12px}.ans{display:none;font-size:18px;color:var(--rust);margin-top:10px;font-weight:600}.ans.show{display:block}
+#bar{position:absolute;left:0;right:0;bottom:0;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 72px;background:var(--navy);color:#fff;font-size:16px}
+#bar button{padding:2px 12px;font-size:18px;background:transparent;color:#fff;border-color:#9fc1e6}
+#prog{position:absolute;left:0;bottom:40px;height:4px;background:var(--rust);transition:width .3s}
+.mono{font-family:'IBM Plex Mono',Consolas,monospace}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
+@keyframes dash{to{stroke-dashoffset:-20}}
+@keyframes pulse{50%{transform:scale(1.18)}}
+@keyframes pillp{50%{box-shadow:0 0 0 8px rgba(166,79,21,.25)}}
+@keyframes wslide{to{transform:translateX(-640px)}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+section.on>*{animation:rise .6s ease both}
+section.on>*:nth-child(2){animation-delay:.12s}section.on>*:nth-child(3){animation-delay:.24s}section.on>*:nth-child(4){animation-delay:.36s}
+section.on .card,section.on .box{animation:pop .5s ease both}
+.grid .card:nth-child(2){animation-delay:.15s!important}.grid .card:nth-child(3){animation-delay:.3s!important}.grid .card:nth-child(4){animation-delay:.45s!important}
+section.on li{animation:rise .5s ease both}li:nth-child(2){animation-delay:.15s!important}li:nth-child(3){animation-delay:.3s!important}li:nth-child(4){animation-delay:.45s!important}li:nth-child(5){animation-delay:.6s!important}
+.pill{animation:pillp 2s infinite}
+#topo line{stroke-dasharray:6 4;animation:dash 1s linear infinite}
+button{transition:.2s}button:hover{transform:translateY(-2px)}
+.box:hover{transform:scale(1.04)}
+#wave{position:absolute;left:0;bottom:40px;width:1280px;height:150px;overflow:hidden;opacity:.85}
+#wave path{animation:wslide 6s linear infinite}
+#vid{position:relative;height:300px;background:var(--navy);border-radius:14px;overflow:hidden;width:1136px}
+.dev{position:absolute;top:30px;width:150px;text-align:center;font-size:76px;color:#9fc1e6}.dev small{display:block;font-size:16px}
+.dev.pulse .e{display:inline-block;animation:pulse 1s infinite}
+#pk{position:absolute;top:208px;left:180px;display:flex;gap:4px;align-items:center;transition:left 2.6s ease-in-out}
+.c{padding:7px 12px;border-radius:8px;font-size:18px;font-weight:600;color:#fff;animation:pop .4s both}
+</style></head><body>
+<div id="wrap"><div id="stage">
+<div id="deck"></div>
+<div id="prog"></div>
+<div id="bar"><span>Md. Shahriar Hossain Zisan · University of Barishal</span><span><button id="pv">‹</button> <span id="cnt"></span> <button id="nx">›</button></span></div>
+</div></div>
+<template id="slides">
+
+<section class="dark"><div id="wave"></div><p class="kick">Data Communication · Lecture 1</p><h1>Introduction to Data Communications</h1><p style="font-size:26px;max-width:900px">How two machines agree to talk: components, data flow, networks, topologies and layered models</p><p class="kick" style="margin-top:30px">Md. Shahriar Hossain Zisan · CSE, University of Barishal</p></section>
+
+<section><h2>What you will learn</h2><div class="cols"><ul><li>Define data communication and its four characteristics</li><li>Identify the five components of a communication system</li><li>Distinguish simplex, half-duplex and full-duplex</li><li>Compare topologies and calculate their link needs</li><li>Explain protocols, standards, OSI and TCP/IP, and encapsulation</li></ul>
+<div class="card" style="flex:1"><h3>Roadmap</h3><p style="font-size:20px;line-height:1.7;margin-top:10px">① Basics &amp; components<br>② Data flow<br>③ Networks &amp; topologies<br>④ Protocols &amp; standards<br>⑤ Layered models</p></div></div></section>
+
+<section><h2>What is data communication?</h2><div class="cols"><ul><li><b>Data communication</b>: exchange of data between two devices over a transmission medium (wire, fibre or air)</li><li><i>Tele</i> means far: telecommunication is communication at a distance</li><li>A system is effective only if it meets four characteristics (right)</li></ul>
+<div class="grid"><div class="card"><h3>✉ Delivery</h3><p>Data reaches the correct destination, and only that one</p></div><div class="card"><h3>✔ Accuracy</h3><p>Data arrives unaltered; corrupted data is unusable</p></div><div class="card"><h3>⏱ Timeliness</h3><p>Data arrives in time; late audio or video is useless</p></div><div class="card"><h3>〰 Jitter</h3><p>Variation in packet delay stays small</p></div></div></div></section>
+
+<section><h2>Five components of a communication system</h2><div class="cols"><ul><li><b>Message</b>: the information (text, image, audio, video)</li><li><b>Sender</b> and <b>receiver</b>: the devices at each end</li><li><b>Medium</b>: the physical path (cable, fibre, radio)</li><li><b>Protocol</b>: rules both sides agree on; without it devices are connected but cannot communicate</li></ul>
+<div class="card" style="flex:1;display:flex;flex-direction:column;gap:14px"><div class="box" style="border:2px dashed var(--blue)">⑤ Protocol: rules agreed by both sides</div><div style="display:flex;align-items:center;gap:10px;text-align:center"><div class="box" style="background:var(--navy);color:#fff">② Sender</div>→<div class="box" style="background:var(--navy);color:#fff">④ Medium</div>→<div class="box" style="background:var(--navy);color:#fff">③ Receiver</div></div><div class="box" style="background:var(--pale)">① Message “Hi”<div class="mono" style="font-size:22px;margin-top:6px">01001000 01101001</div></div></div></div></section>
+
+<section><h2>Data flow: simplex, half-duplex, full-duplex <span class="pill">Interactive</span></h2><div style="display:flex;gap:12px"><button data-m="s" class="act">Simplex</button><button data-m="h">Half-duplex</button><button data-m="f">Full-duplex</button></div>
+<div class="card" style="height:300px;position:relative"><div class="box" style="position:absolute;left:30px;top:100px;width:150px;text-align:center;background:var(--navy);color:#fff">Device A</div><div class="box" style="position:absolute;right:30px;top:100px;width:150px;text-align:center;background:var(--navy);color:#fff">Device B</div><svg id="flow" viewBox="0 0 900 300" style="position:absolute;inset:0;width:100%;height:100%"></svg></div><p id="flowtxt" style="font-size:22px"></p></section>
+
+<section><p class="kick" style="color:var(--rust)">Checkpoint 1</p><h2>Check your understanding</h2><div style="display:flex;gap:20px" id="c1"></div></section>
+
+<section><h2>Networks and the three criteria</h2><div class="cols"><ul><li><b>Network</b>: devices (nodes) connected by links</li><li><b>Performance</b>: throughput and delay</li><li><b>Reliability</b>: failure rate and recovery time</li><li><b>Security</b>: protection from unauthorised access</li></ul>
+<div style="flex:1"><h3>The highway analogy</h3><table style="margin-top:10px"><tr><th>Term</th><th>Meaning</th><th>Highway</th></tr><tr><td><b>Bandwidth</b></td><td>Maximum capacity</td><td>Number of lanes</td></tr><tr><td><b>Throughput</b></td><td>Data actually delivered</td><td>Cars passing per minute</td></tr><tr><td><b>Latency</b></td><td>End-to-end travel time</td><td>Trip time A to B</td></tr></table><p class="card" style="margin-top:14px;font-size:17px">More lanes do not shorten the trip: bandwidth ≠ latency.</p></div></div></section>
+
+<section><h2>Topologies: how many cables? <span class="pill">Interactive</span></h2><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap" id="tb"><button data-t="mesh" class="act">Mesh</button><button data-t="star">Star</button><button data-t="ring">Ring</button><button data-t="bus">Bus</button><span style="font-size:20px;margin-left:20px">Devices n = <b id="nv">6</b></span><input type="range" id="nr" min="3" max="12" value="6"></div>
+<div class="cols"><svg id="topo" viewBox="0 0 400 300" style="width:520px;height:390px;background:var(--card);border:1px solid var(--line);border-radius:14px"></svg>
+<div style="flex:1"><div class="card"><p style="font-size:18px;color:var(--mute)">Links needed</p><div class="big" id="links"></div><p id="ports" style="font-size:19px"></p></div><p id="tnote" style="font-size:19px;margin-top:14px;line-height:1.4"></p><p class="card" style="margin-top:12px;font-size:17px">Worked example: n = 10 → mesh needs 10×9/2 = <b>45</b> links and 9 ports each; star needs <b>10</b> links.</p></div></div></section>
+
+<section><h2>Comparing the four topologies</h2><table><tr><th>Topology</th><th>Cabling (n devices)</th><th>Strength</th><th>Weakness</th><th>Seen in</th></tr><tr><td><b>Mesh</b></td><td>n(n−1)/2 links</td><td>Robust, private</td><td>Cabling grows fast</td><td>Internet backbone</td></tr><tr><td><b>Star</b></td><td>n links to a hub</td><td>Cheap; one bad link affects one device</td><td>Hub is single point of failure</td><td>Home/office Ethernet, Wi-Fi</td></tr><tr><td><b>Bus</b></td><td>1 backbone + n drops</td><td>Least cabling</td><td>One break stops everyone</td><td>Early coax Ethernet</td></tr><tr><td><b>Ring</b></td><td>n links in a loop</td><td>Easy fault isolation</td><td>One break can stop a one-way ring</td><td>Token Ring, metro fibre</td></tr></table></section>
+
+<section><h2>Networks by scale: LAN, MAN, WAN</h2><div class="cols"><ul><li><b>LAN</b>: privately owned; office, building or campus</li><li><b>MAN</b>: a town or city</li><li><b>WAN</b>: country, continent or world; usually run by carriers</li><li><b>Internet</b>: networks connected together: backbones → provider ISPs → customer networks</li></ul>
+<div class="card" style="flex:1;display:flex;flex-direction:column;gap:14px"><div class="box" style="width:30%;background:var(--blue);color:#fff">LAN</div><span style="color:var(--mute);font-size:16px">Office, building, campus</span><div class="box" style="width:55%;background:var(--navy);color:#fff">MAN</div><span style="color:var(--mute);font-size:16px">City-wide cable or fibre</span><div class="box" style="width:100%;background:var(--rust);color:#fff">WAN</div><span style="color:var(--mute);font-size:16px">Run by carriers</span></div></div></section>
+
+<section><h2>Protocols and standards</h2><div class="cols"><div style="flex:1"><h3>A protocol defines what, how and when</h3><div class="card" style="margin-top:12px"><b>Syntax</b> ≈ grammar: the format of the data<br><span style="color:var(--mute);font-size:16px">Ethernet: first 6 bytes = destination address</span></div><div class="card" style="margin-top:10px"><b>Semantics</b> ≈ vocabulary: meaning of each field<br><span style="color:var(--mute);font-size:16px">“data”, “acknowledge” or “resend”?</span></div><div class="card" style="margin-top:10px"><b>Timing</b> ≈ turn-taking: when and how fast<br><span style="color:var(--mute);font-size:16px">A 100 Mbps sender can overwhelm a 1 Mbps receiver</span></div></div>
+<div style="flex:1"><h3>Who writes the rules</h3><table style="margin-top:12px"><tr><th>Body</th><th>Known for</th></tr><tr><td>ISO</td><td>OSI model</td></tr><tr><td>ITU-T</td><td>Telecom standards</td></tr><tr><td>IEEE</td><td>802.3 Ethernet, 802.11 Wi-Fi</td></tr><tr><td>ANSI</td><td>ASCII</td></tr><tr><td>IETF</td><td>Internet protocols (RFCs)</td></tr></table><p style="font-size:17px;margin-top:10px"><b>De facto</b> = by wide use · <b>De jure</b> = formally approved</p></div></div></section>
+
+<section><h2>OSI and TCP/IP layered models</h2><div class="cols"><ul style="width:480px"><li><b>Application</b>: web, email, file transfer</li><li><b>Transport</b>: process-to-process (TCP, UDP)</li><li><b>Network</b>: host-to-host routing (IP)</li><li><b>Data link</b>: hop-to-hop frames</li><li><b>Physical</b>: bits as signals; most of this course</li></ul>
+<div style="display:flex;gap:30px;flex:1" id="layers"></div></div></section>
+
+<section><h2>Encapsulation: wrap a message layer by layer <span class="pill">Interactive</span></h2><div style="display:flex;gap:12px;align-items:center"><input type="text" id="msg" value="Hi" maxlength="14"><button id="ebtn">Next layer ▼</button><button id="ereset">Reset</button></div><div class="card" style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:center" id="enc"></div></section>
+
+<section id="vsec"><h2>See it in action: a message's journey <span class="pill">Animated video</span></h2><div id="vid"><svg width="1136" height="300" style="position:absolute;inset:0"><line x1="150" y1="150" x2="990" y2="150" stroke="#9fc1e6" stroke-width="3" stroke-dasharray="10 8" style="animation:dash 1s linear infinite;opacity:.5"/></svg><div class="dev" id="d1" style="left:20px"><span class="e">💻</span><small>Laptop (sender)</small></div><div class="dev" id="d2" style="left:493px"><span class="e">📡</span><small>Wi-Fi router</small></div><div class="dev" id="d3" style="left:966px"><span class="e">📱</span><small>Mobile (receiver)</small></div><div id="pk"></div></div><p id="vcap" style="font-size:21px;min-height:60px"></p><div style="display:flex;gap:12px;align-items:center"><button id="vp">⏸ Pause</button><button id="vr">↺ Replay</button><input type="range" id="vs" min="0" max="7" value="0" style="width:500px"><span id="vl" style="font-size:18px"></span></div></section>
+
+<section><p class="kick" style="color:var(--rust)">Checkpoint 2</p><h2>Check your understanding</h2><div style="display:flex;gap:20px" id="c2"></div></section>
+
+<section class="dark"><p class="kick">Key takeaways</p><ul style="color:#f5f3ee;font-size:25px;width:1000px"><li>Data communication is judged by delivery, accuracy, timeliness and jitter</li><li>Five components: message, sender, receiver, medium, protocol</li><li>Data flows simplex, half-duplex or full-duplex</li><li>Full mesh needs n(n−1)/2 links; a star needs n</li><li>Layered models split the work; encapsulation adds a header at each layer</li></ul><p class="kick" style="margin-top:20px">Next: Lecture 2 · Data and Signals I</p></section>
+
+</template>
+<script>
+const $=s=>document.querySelector(s);
+$('#deck').innerHTML=$('#slides').innerHTML;
+const S=[...document.querySelectorAll('#deck section')];let cur=0;
+function show(i){cur=Math.max(0,Math.min(S.length-1,i));S.forEach((s,k)=>s.classList.toggle('on',k===cur));$('#cnt').textContent=(cur+1)+' / '+S.length;$('#prog').style.width=((cur+1)/S.length*100)+'%';}
+function fit(){const k=Math.min(innerWidth/1280,innerHeight/720);$('#stage').style.transform='scale('+k+')';}
+addEventListener('resize',fit);fit();
+$('#pv').onclick=()=>show(cur-1);$('#nx').onclick=()=>show(cur+1);
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'&&e.target.type==='text')return;if(['ArrowRight',' ','PageDown'].includes(e.key))show(cur+1);if(['ArrowLeft','PageUp'].includes(e.key))show(cur-1);if(e.key==='Home')show(0);if(e.key==='End')show(S.length-1);});
+let tx=0;addEventListener('touchstart',e=>tx=e.touches[0].clientX);addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)show(cur+(d<0?1:-1));});
+
+// quizzes
+function quiz(id,items){$(id).innerHTML=items.map((q,i)=>`<div class="card q"><h3 style="color:var(--rust)">Q${i+1}</h3><p>${q[0]}</p><button>Show answer</button><div class="ans">${q[1]}</div></div>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>b.nextElementSibling.classList.toggle('show'));}
+quiz('#c1',[['Packets arrive 30 ms, 120 ms, then 40 ms apart. Which characteristic is violated?','Jitter'],['Two laptops joined by a working cable understand nothing. What is missing?','A shared protocol'],['How many bits does “Hello” need in 8-bit ASCII?','5 × 8 = 40 bits']]);
+quiz('#c2',[['Six devices in a full mesh: how many links and ports per device?','6×5/2 = 15 links; 5 ports each'],['Which topology stops entirely when the main cable is cut?','Bus'],['Which layer handles hop-to-hop delivery of frames?','Data link layer']]);
+
+// data flow
+const FM={s:['Simplex: one direction only, e.g. keyboard → computer.',[1]],h:['Half-duplex: both directions, one at a time, e.g. walkie-talkie.',[1,2]],f:['Full-duplex: both directions at once, e.g. a phone call.',[1,2]]};
+const arrow=(y,dir,c,dash)=>{const x1=dir?190:710,x2=dir?710:190,h=dir?-14:14;return `<line x1="${x1}" y1="${y}" x2="${x2+h}" y2="${y}" stroke="${c}" stroke-width="5" ${dash?'stroke-dasharray="12 8"':''}/><polygon points="${x2},${y} ${x2+h},${y-9} ${x2+h},${y+9}" fill="${c}"/>`};
+let ht;function flow(m){clearInterval(ht);document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('act',b.dataset.m===m));$('#flowtxt').textContent=FM[m][0];const f=$('#flow');
+if(m==='s')f.innerHTML=arrow(150,1,'#2f6db5');
+else if(m==='f')f.innerHTML=arrow(120,1,'#a64f15')+arrow(180,0,'#a64f15');
+else{let t=0;const d=()=>{f.innerHTML=t?arrow(150,0,'#5b6672',1):arrow(150,1,'#2f6db5');t^=1};d();ht=setInterval(d,1200);}}
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>flow(b.dataset.m));flow('s');
+
+// topology
+let tp='mesh';
+function topo(){const n=+$('#nr').value;$('#nv').textContent=n;document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('act',b.dataset.t===tp));
+const P=[...Array(n)].map((_,i)=>{const a=2*Math.PI*i/n-Math.PI/2;return[200+105*Math.cos(a),150+105*Math.sin(a)]});let g='',links,ports,note;
+if(tp==='mesh'){for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)g+=`<line x1="${P[i][0]}" y1="${P[i][1]}" x2="${P[j][0]}" y2="${P[j][1]}" stroke="#2f6db5" stroke-width="1.5"/>`;links=n*(n-1)/2;ports=`${n-1} ports on every device`;note='Formula n(n−1)/2: cabling explodes as n grows.';}
+if(tp==='star'){P.forEach(p=>g+=`<line x1="200" y1="150" x2="${p[0]}" y2="${p[1]}" stroke="#2f6db5" stroke-width="3"/>`);g+=`<circle cx="200" cy="150" r="16" fill="#c9752e"/>`;links=n;ports=`1 port per device; ${n} on the hub`;note='Cheap and easy, but the hub is a single point of failure.';}
+if(tp==='ring'){P.forEach((p,i)=>{const q=P[(i+1)%n];g+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#2f6db5" stroke-width="3"/>`});links=n;ports='2 ports per device';note='n links in a loop; one break can stop a one-way ring.';}
+if(tp==='bus'){g=`<line x1="30" y1="150" x2="370" y2="150" stroke="#c9752e" stroke-width="7"/>`;P.length=0;for(let i=0;i<n;i++){const x=40+i*(320/(n-1)),y=i%2?220:80;P.push([x,y]);g+=`<line x1="${x}" y1="150" x2="${x}" y2="${y}" stroke="#2f6db5" stroke-width="2.5"/>`}links=n;ports='1 drop line per device + 1 backbone';note='Least cabling; one break in the backbone stops everyone.';}
+g+=P.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="${n>9?9:12}" fill="#16324f"/>`).join('');
+$('#topo').innerHTML=g;$('#links').textContent=links;$('#ports').textContent=ports;$('#tnote').textContent=note;}
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tp=b.dataset.t;topo()});$('#nr').oninput=topo;topo();
+
+// layers
+const L1=['7 · Application','6 · Presentation','5 · Session','4 · Transport','3 · Network','2 · Data link','1 · Physical'];
+$('#layers').innerHTML=`<div style="flex:1"><h3>OSI (7)</h3>${L1.map((l,i)=>`<div class="box" style="margin-top:8px;text-align:center;background:${i>4?'var(--rust)':'var(--navy)'};color:#fff;font-size:16px">${l}</div>`).join('')}</div><div style="flex:1"><h3>TCP/IP (5)</h3><div class="box" style="margin-top:8px;height:164px;line-height:130px;text-align:center;background:var(--navy);color:#fff;font-size:16px">Application</div>${['Transport','Network','Data link','Physical'].map((l,i)=>`<div class="box" style="margin-top:8px;text-align:center;background:${i>1?'var(--rust)':'var(--navy)'};color:#fff;font-size:16px">${l}</div>`).join('')}</div>`;
+
+// encapsulation
+const EL=[['Application','message',null],['Transport','segment','H4'],['Network','datagram','H3'],['Data link','frame','H2'],['Physical','bits',null]];
+const HC={H4:'#16324f',H3:'#2f6db5',H2:'#a64f15',T2:'#a64f15'};let es=0;
+function enc(){const m=$('#msg').value||'Hi';let html='';
+for(let i=0;i<=es;i++){let parts='';const hs=['H2','H3','H4'].filter(h=>EL.slice(1,i+1).some(l=>l[2]===h));
+if(i===4){const bits=[...m].slice(0,4).map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');parts=`<span class="mono" style="color:var(--rust);font-size:20px">${bits} …</span>`;}
+else{parts=hs.map(h=>`<span class="box" style="background:${HC[h]};color:#fff">${h}</span>`).join('')+`<span class="box" style="background:var(--pale)">${m}</span>`+(i>=3?`<span class="box" style="background:var(--rust);color:#fff">T2</span>`:'');}
+html+=`<div style="display:flex;align-items:center;gap:14px"><span style="width:190px;font-size:18px"><b>${EL[i][0]}</b> · ${EL[i][1]}</span><span style="display:flex;gap:4px">${parts}</span></div>`;}
+$('#enc').innerHTML=html+(es===4?'<p style="font-size:16px;color:var(--mute)">The receiver reverses this: each layer removes its header (decapsulation).</p>':'');$('#ebtn').disabled=es===4;}
+$('#ebtn').onclick=()=>{es=Math.min(4,es+1);enc()};$('#ereset').onclick=()=>{es=0;enc()};$('#msg').oninput=enc;enc();
+
+// cover wave: analog sine turning into digital square wave
+(()=>{let d='M0 75',s='M0 75';for(let x=0;x<=1920;x+=8){d+=` L${x} ${75-40*Math.sin(x/40)}`}
+let sq='M0 115';for(let x=0;x<1920;x+=160){const y=(x/160)%2?115:35;sq+=` L${x} ${y} L${x+160} ${y}`}
+$('#wave').innerHTML=`<svg width="1920" height="150" style="display:block"><path d="${d}" fill="none" stroke="#c9752e" stroke-width="4"/><path d="${sq}" fill="none" stroke="#9fc1e6" stroke-width="3" opacity=".6" transform="translate(0,0)"/></svg>`;
+document.querySelectorAll('#wave path').forEach(p=>p.style.animationDuration='8s');})();
+
+// animated message-journey video
+const ch=(t,bg,fg,mono)=>`<span class="c" style="background:${bg};color:${fg||'#fff'}${mono?';font-family:monospace':''}">${t}</span>`;
+const H=h=>ch(h,{H4:'#2a5db0',H3:'#2f6db5',H2:'#a64f15',T2:'#a64f15'}[h]);
+const WV='<svg width="220" height="40"><path d="M0 20 Q 13 0 27 20 T 55 20 T 82 20 T 110 20 T 137 20 T 165 20 T 192 20 T 220 20" fill="none" stroke="#c9752e" stroke-width="4"/></svg>';
+const bits=ch('01001000 01101001','#e7edf3','#1d2733',1),data=ch('bits','#e7edf3','#1d2733');
+const SC=[
+['① Message: you type “Hi” on the laptop. Sender, receiver, medium and protocol are all in place.',180,ch('Hi','#e7edf3','#1d2733'),''],
+['② Text becomes bits: ASCII turns “H” and “i” into 01001000 01101001.',180,bits,'d1'],
+['③ Encapsulation: the transport, network and data-link layers add headers H4, H3, H2 and a trailer T2.',180,H('H2')+H('H3')+H('H4')+data+H('T2'),'d1'],
+['④ Physical layer: the frame is converted into a signal (electrical or radio) and leaves the laptop.',330,WV,'d1'],
+['⑤ The router receives the signal, reads the headers and forwards the frame toward the mobile.',420,H('H2')+H('H3')+H('H4')+data+H('T2'),'d2'],
+['⑥ The signal crosses the air. Noise ⚡ may disturb it; the trailer lets the receiver detect errors.',700,WV+'<span style="font-size:26px">⚡</span>','d2'],
+['⑦ The mobile turns the signal back into bits and strips the headers: H2, then H3, then H4 (decapsulation).',800,H('H4')+data,'d3'],
+['⑧ Bits become text: “Hi” appears on the mobile. Message delivered!',850,ch('Hi ✔','#2e8b57'),'d3']];
+let vt=0,vp=true,vs=-1,von=false;const VS=4200;
+function vscene(i){vs=i;const s=SC[i];$('#vcap').textContent=s[0];const pk=$('#pk');pk.style.left=s[1]+'px';pk.innerHTML=s[2];['d1','d2','d3'].forEach(d=>$('#'+d).classList.toggle('pulse',d===s[3]));$('#vs').value=i;$('#vl').textContent='Step '+(i+1)+' / 8';}
+$('#vp').onclick=()=>{vp=!vp;if(vp&&vt>=8*VS)vt=0;$('#vp').textContent=vp?'⏸ Pause':'▶ Play';};
+$('#vr').onclick=()=>{vt=0;vs=-1;vp=true;$('#vp').textContent='⏸ Pause';};
+$('#vs').oninput=e=>{vt=+e.target.value*VS;vp=false;$('#vp').textContent='▶ Play';vscene(+e.target.value);};
+setInterval(()=>{const on=S[cur]===$('#vsec');if(on&&!von){vt=0;vs=-1;vp=true;$('#vp').textContent='⏸ Pause';}von=on;if(!on)return;
+if(vp){vt+=100;if(vt>=8*VS){vp=false;vt=8*VS-1;$('#vp').textContent='▶ Play';}}
+const i=Math.min(7,Math.floor(vt/VS));if(i!==vs)vscene(i);},100);
+show(0);
+</script></body></html>
